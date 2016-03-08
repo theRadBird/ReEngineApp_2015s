@@ -37,6 +37,39 @@ void AppClass::Update(void)
 
 #pragma region Your Code goes here
 	m_pMeshMngr->SetModelMatrix(IDENTITY_M4, "WallEye");
+	
+	//Structure for character positions
+	std::vector<vector3> locations;
+
+	//Add all character positions
+	locations.push_back(vector3(-4.0f, -2.0f, 5.0f));
+	locations.push_back(vector3(1.0f, -2.0f, 5.0f));
+	locations.push_back(vector3(-3.0f, -1.0f, 3.0f));
+	locations.push_back(vector3(2.0f, -1.0f, 3.0f));
+	locations.push_back(vector3(-2.0f, 0.0f, 0.0f));
+	locations.push_back(vector3(3.0f, 0.0f, 0.0f));
+	locations.push_back(vector3(-1.0f, 1.0f, -3.0f));
+	locations.push_back(vector3(4.0f, 1.0f, -3.0f));
+	locations.push_back(vector3(0.0f, 2.0f, -5.0f));
+	locations.push_back(vector3(5.0f, 2.0f, -5.0f));
+	locations.push_back(vector3(1.0f, 3.0f, -5.0f));
+
+	//Add spheres where locations are
+	for (uint i = 0; i < locations.size(); i++) //i is unsigned because .size() is of type unsigned.
+	{
+		//JULIE TODO: ADD SPHERE CODE HERE -?
+		//DrawCircle(locations[i].x, locations[i].y, 0.1f);
+	}
+
+	//loop through all locations, movint from point to point.
+	for (uint i = 0; i < locations.size(); i++)
+	{
+		//move to point
+	}
+
+
+
+
 #pragma endregion
 
 #pragma region Does not need changes but feel free to change anything here
