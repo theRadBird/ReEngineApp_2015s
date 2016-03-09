@@ -15,6 +15,10 @@ class AppClass : public ReEngAppClass
 	float fDuration = 1.0f; //Time Duration of the stops
 public:
 	typedef ReEngAppClass super;
+    PrimitiveClass* m_pSphere = nullptr;
+    matrix4* m_pMatrix = nullptr;
+    int m_dataSize;
+    std::vector<vector3> m_locations;
 	/*
 	USAGE: Constructor
 	ARGUMENTS:

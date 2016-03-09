@@ -14,6 +14,33 @@ void AppClass::InitVariables(void)
 	m_pMeshMngr->LoadModel("Sorted\\WallEye.bto", "WallEye");
 
 	fDuration = 1.0f;
+
+    //Add all character positions
+    m_locations.push_back(vector3(-4.0f, -2.0f, 5.0f));
+    m_locations.push_back(vector3(1.0f, -2.0f, 5.0f));
+    m_locations.push_back(vector3(-3.0f, -1.0f, 3.0f));
+    m_locations.push_back(vector3(2.0f, -1.0f, 3.0f));
+    m_locations.push_back(vector3(-2.0f, 0.0f, 0.0f));
+    m_locations.push_back(vector3(3.0f, 0.0f, 0.0f));
+    m_locations.push_back(vector3(-1.0f, 1.0f, -3.0f));
+    m_locations.push_back(vector3(4.0f, 1.0f, -3.0f));
+    m_locations.push_back(vector3(0.0f, 2.0f, -5.0f));
+    m_locations.push_back(vector3(5.0f, 2.0f, -5.0f));
+    m_locations.push_back(vector3(1.0f, 3.0f, -5.0f));
+    
+    m_dataSize = m_locations.size();
+
+    //Make Sphere
+    m_pSphere = new PrimitiveClass();
+    m_pMatrix = new matrix4[m_dataSize];
+
+    m_pSphere->GenerateSphere(0.1f, 8, RERED);
+    m_pSphere = new PrimitiveClass[m_dataSize];
+
+    for (uint i = 0; i < m_dataSize; i++)
+    {
+        m_pSphere[i].GenerateSphere(0.5f, 8, RERED);
+    }
 }
 
 void AppClass::Update(void)
@@ -38,37 +65,37 @@ void AppClass::Update(void)
 #pragma region Your Code goes here
 	m_pMeshMngr->SetModelMatrix(IDENTITY_M4, "WallEye");
 	
-	//Structure for character positions
-	std::vector<vector3> locations;
-
-	//Add all character positions
-	locations.push_back(vector3(-4.0f, -2.0f, 5.0f));
-	locations.push_back(vector3(1.0f, -2.0f, 5.0f));
-	locations.push_back(vector3(-3.0f, -1.0f, 3.0f));
-	locations.push_back(vector3(2.0f, -1.0f, 3.0f));
-	locations.push_back(vector3(-2.0f, 0.0f, 0.0f));
-	locations.push_back(vector3(3.0f, 0.0f, 0.0f));
-	locations.push_back(vector3(-1.0f, 1.0f, -3.0f));
-	locations.push_back(vector3(4.0f, 1.0f, -3.0f));
-	locations.push_back(vector3(0.0f, 2.0f, -5.0f));
-	locations.push_back(vector3(5.0f, 2.0f, -5.0f));
-	locations.push_back(vector3(1.0f, 3.0f, -5.0f));
-
-	//Add spheres where locations are
-	for (uint i = 0; i < locations.size(); i++) //i is unsigned because .size() is of type unsigned.
+	//loop through all locations, move from point to point.
+	for (uint i = 0; i < m_dataSize; i++)
 	{
-		//JULIE TODO: ADD SPHERE CODE HERE -?
-		//DrawCircle(locations[i].x, locations[i].y, 0.1f);
+        float fPercent = MapValue(
+            static_cast<float>(i),
+            0.0f,
+            static_cast<float>(m_dataSize),
+            0.0f,
+            1.0f
+            );
+
+        //If on the last point, we want to make sure to go to the 1st position.
+        //this doesn't actually move... anything...
+        if ( i != m_dataSize) 
+        {
+            //this needs to take one i position and move it to the next but it doesn't so RIP
+            vector3 v3Start(static_cast<float>(m_dataSize), 0.0f, 0.0f);
+            vector3 v3End = glm::lerp(v3Start, v3End, static_cast<float>(1));
+
+            vector3 v3Current = glm::lerp(v3Start, v3End, fPercent);
+            m_pMatrix[i] = glm::translate(v3Current);
+        }
+        else 
+        {
+            vector3 v3Start(static_cast<float>(m_dataSize), 0.0f, 0.0f);
+            vector3 v3End = glm::lerp(v3Start, v3End, static_cast<float>(1));
+
+            vector3 v3Current = glm::lerp(v3Start, v3End, fPercent);
+            m_pMatrix[i] = glm::translate(v3Current);
+        }
 	}
-
-	//loop through all locations, movint from point to point.
-	for (uint i = 0; i < locations.size(); i++)
-	{
-		//move to point
-	}
-
-
-
 
 #pragma endregion
 
@@ -108,6 +135,16 @@ void AppClass::Display(void)
 		break;
 	}
 	
+    matrix4 mProjection = m_pCameraMngr->GetProjectionMatrix();
+    matrix4 mView = m_pCameraMngr->GetViewMatrix();
+
+    //Makes spheres in different locations - JUST KIDDING nothing shows up :'(
+    for (uint i = 0; i < m_dataSize; i++)
+    {
+        m_pMatrix[i] = glm::translate(m_locations[i]);
+        m_pSphere[i].Render(mProjection, mView, m_pMatrix[i]);
+    }
+
 	m_pMeshMngr->Render(); //renders the render list
 
 	m_pGLSystem->GLSwapBuffers(); //Swaps the OpenGL buffers
@@ -116,4 +153,16 @@ void AppClass::Display(void)
 void AppClass::Release(void)
 {
 	super::Release(); //release the memory of the inherited fields
+
+    if (m_pSphere != nullptr)
+    {
+        delete[] m_pSphere;
+        m_pSphere = nullptr;
+    }
+
+    if (m_pMatrix != nullptr)
+    {
+        delete[] m_pMatrix;
+        m_pMatrix = nullptr;
+    }
 }
